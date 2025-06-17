@@ -2,96 +2,129 @@
 
 An interactive dashboard for Application Owners (AOs) to monitor, analyze, and improve their application-related security performance. The dashboard features an intelligent suggestion system powered by a compact LLM to provide personalized recommendations.
 
+## Quick Start Guide
+
+1. **Prerequisites**:
+
+   - Python 3.8 or higher (from [python.org](https://python.org))
+   - Git with LFS (from [git-scm.com](https://git-scm.com))
+   - Git LFS (for downloading model files)
+
+2. **Clone the Repository**:
+
+   ```bash
+   git clone https://github.com/TejasParekh5/AO-Dashboard.git
+   cd AO-Dashboard
+   git lfs pull  # Pull large model files
+   ```
+
+3. **Set Up Virtual Environment** (recommended):
+
+   - Windows:
+     ```bash
+     python -m venv venv
+     venv\Scripts\activate
+     ```
+   - Linux/Mac:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+4. **Install Dependencies**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Run the Dashboard**:
+
+   - Basic Dashboard:
+
+     - Windows: Double-click `start_dashboard.bat`
+     - Linux/Mac: `./start_dashboard.sh`
+
+   - Enhanced Dashboard with AI:
+     - Windows: Double-click `start_enhanced_with_api.bat`
+     - Linux/Mac: `./start_enhanced_dashboard.sh`
+
+6. **Access the Dashboard**:
+   - Basic Dashboard: http://localhost:8050
+   - Enhanced Dashboard: http://localhost:8051
+
 ## Project Components
 
-This project contains two main dashboards:
+The project consists of two main dashboards:
 
-1. **Standard Dashboard** (`dashboard.py`) - Basic dashboard with essential KPI visualization features
-2. **Enhanced Dashboard** (`enhanced_dashboard.py`) - Advanced dashboard with additional features and ML-powered suggestion system
+1. **Basic Dashboard** (`dashboard.py`):
 
-## Features
+   - Essential KPI visualization features
+   - Performance metrics and tracking
+   - Interactive filtering and export functionality
 
-### Standard Dashboard Features
+2. **Enhanced Dashboard** (`enhanced_dashboard.py`):
+   - AI-powered suggestion system
+   - Advanced visualizations
+   - Detailed performance analytics
 
-- **Interactive Filtering**: Filter by Application Owner, Department, and Status
-- **Real-time Visualizations**: Track vulnerabilities, risk scores, and remediation progress
-- **Performance Metrics**: Individual AO performance tracking and comparison
-- **Export Functionality**: Export insights as CSV for further analysis
-- **Highlight Critical Issues**:
-  - Vulnerabilities open > 30 days with High or Critical severity
-  - Items with CVSS_Score > 7 or Risk_Score > 7 flagged as urgent
+## Key Features
 
-### Enhanced Dashboard Additional Features
+### Basic Dashboard
 
-- **Smart Suggestion System**: LLM-driven feedback engine to help AOs improve their cybersecurity KPIs
-- **Relationship Mapping Visuals**: Hierarchical sankey diagrams and bubble charts
-- **AO Performance Panel**: Detailed metrics comparing AO to organization average
-- **Risk Concentration Visualizations**: Heatmaps and additional analysis tools
+- Interactive filtering by Application Owner, Department, and Status
+- Real-time visualization of vulnerabilities and risk scores
+- Performance tracking and comparison tools
+- CSV export functionality
+- Critical issue highlighting
 
-## Installation
+### Enhanced Dashboard Additions
 
-1. Make sure you have Python 3.8+ installed
-2. Install the required packages:
+- LLM-powered suggestion system
+- Advanced relationship mapping visuals
+- Detailed AO performance analytics
+- Risk concentration visualizations
 
-```bash
-# For standard dashboard
-pip install -r requirements.txt
+## File Structure
 
-# For enhanced dashboard with ML capabilities
-pip install -r requirements_enhanced.txt
-```
+- `dashboard.py` - Basic dashboard implementation
+- `enhanced_dashboard.py` - Enhanced dashboard with AI features
+- `suggestion_api.py` - AI suggestion system backend
+- `model_utils.py` - Model utility functions
+- `train_model.py` - Model training script
+- `Cybersecurity_KPI_Minimal.xlsx` - Sample data file
+- `models/` - Pre-trained model files (managed with Git LFS)
+- Start scripts:
+  - `start_dashboard.bat/sh` - Launch basic dashboard
+  - `start_enhanced_with_api.bat` - Launch enhanced dashboard with API
 
-## Running the Dashboards
+## System Requirements
 
-### Standard Dashboard
+- RAM: 4GB minimum
+- Disk Space: ~500MB
+- Internet connection (first run)
+- Modern web browser (Chrome/Firefox/Edge)
 
-```bash
-python dashboard.py
-```
+## Troubleshooting
 
-### Enhanced Dashboard with ML Suggestions
+- **Module not found errors**: Ensure virtual environment is activated and dependencies are installed
+- **Port conflicts**: Check if ports 8050/8051 are available
+- **Missing model files**: Run `git lfs pull` to download model files
+- **Permission issues**: Run terminal as administrator (Windows) or use sudo (Linux/Mac)
 
-First, start the suggestion API:
+## Advanced Usage
 
-```bash
-python suggestion_api.py
-```
+For detailed instructions on:
 
-Then in a new terminal, start the dashboard:
+- Training custom models
+- Modifying the suggestion system
+- Advanced configuration options
 
-```bash
-python enhanced_dashboard.py
-```
-
-### Quick Start (Enhanced Dashboard)
-
-For convenience, you can use the provided batch file to start both the suggestion API and enhanced dashboard:
-
-```bash
-start_full_system.bat
-```
-
-The dashboard will be available at http://127.0.0.1:8050/ in your web browser.
-
-## Dashboard Components
-
-1. **Filter Controls**: Select Application Owner, Department, and Status
-2. **Smart Suggestions**: AI-generated recommendations based on AO's performance data
-3. **Severity Distribution**: Breakdown of vulnerabilities by severity
-4. **Status Tracker**: Current status of all vulnerabilities
-5. **Risk Score Analysis**: Distribution of risk scores with high-risk threshold
-6. **Days to Close Analysis**: Average remediation time by severity
-7. **Urgent Issues Table**: Highlighting critical issues requiring immediate attention
-8. **AO Performance Panel**: Detailed metrics for the selected Application Owner
+See `TRAINING_AND_RUNNING_GUIDE.md`
 
 ## Data Structure
 
-The dashboard uses the `Cybersecurity_KPI_Minimal.xlsx` file which contains:
+The dashboard uses `Cybersecurity_KPI_Minimal.xlsx` which contains:
 
 - Application Owner information
 - Application and Asset details
-- Vulnerability data including severity, CVSS scores, and risk metrics
-
-## Training the ML Model
-
-See `TRAINING_AND_RUNNING_GUIDE.md` for detailed instructions on training the model and running the full system.
+- Vulnerability data with severity and risk metrics
