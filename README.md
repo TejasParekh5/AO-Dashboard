@@ -24,6 +24,26 @@
 - **🎨 Professional UI** - Modern, responsive design with custom styling
 - **⚡ High Performance** - Optimized for handling large datasets
 
+## ⚡ Quick Start (TL;DR)
+
+**Just want to run it right now?**
+
+1. **Clone & Install:**
+   ```bash
+   git clone https://github.com/TejasParekh5/AO-Dashboard.git
+   cd AO-Dashboard
+   pip install -r requirements.txt
+   ```
+
+2. **Run (Windows):**
+   ```cmd
+   .\START_SIMPLE.bat
+   ```
+
+3. **Access:** Open browser to `http://localhost:8050`
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -37,15 +57,19 @@
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/YourUsername/CyberSec-Pro-Dashboard.git
-   cd CyberSec-Pro-Dashboard
+   git clone https://github.com/TejasParekh5/AO-Dashboard.git
+   cd AO-Dashboard
    ```
 
 2. **Create Virtual Environment** (Recommended)
    ```bash
-   # Windows
+   # Windows Command Prompt
    python -m venv venv
    venv\\Scripts\\activate
+   
+   # Windows PowerShell
+   python -m venv venv
+   venv\\Scripts\\Activate.ps1
    
    # Linux/Mac
    python3 -m venv venv
@@ -67,16 +91,26 @@
 
 ### Method 1: Automated Scripts (Recommended)
 
-**Windows:**
-```bash
-# Start both dashboard and API
-START_OPTIMIZED_DASHBOARD.bat
+**Windows Command Prompt:**
+```cmd
+START_SIMPLE.bat
 ```
 
-**PowerShell:**
+**Windows PowerShell:**
 ```powershell
-# Enhanced PowerShell script
+# Simple and reliable method
+.\\START_SIMPLE.bat
+
+# Alternative: Original batch file
+.\\START_OPTIMIZED_DASHBOARD.bat
+
+# PowerShell script (if execution policy allows)
 .\\scripts\\start_optimized_dashboard.ps1
+```
+
+**Linux/Mac:**
+```bash
+./scripts/start_dashboard.sh
 ```
 
 ### Method 2: Manual Start
@@ -244,19 +278,31 @@ python analyze_excel.py
    pkill -f python  # Linux/Mac
    ```
 
-2. **Model Loading Errors**
+2. **PowerShell Script Execution Error**
+   ```powershell
+   # If you get "execution policy" error
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   
+   # If batch file not recognized, use .\ prefix
+   .\\START_OPTIMIZED_DASHBOARD.bat
+   
+   # Alternative: Run PowerShell script directly
+   .\\scripts\\start_optimized_dashboard.ps1
+   ```
+
+3. **Model Loading Errors**
    ```bash
    # Re-download models
    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('paraphrase-MiniLM-L3-v2')"
    ```
 
-3. **Data File Issues**
+4. **Data File Issues**
    ```bash
    # Verify data file integrity
    python inspect_dataset.py
    ```
 
-4. **Dependency Issues**
+5. **Dependency Issues**
    ```bash
    # Reinstall dependencies
    pip install --upgrade -r requirements.txt
