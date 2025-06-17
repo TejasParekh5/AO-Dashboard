@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Query, HTTPException
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any, Union
 import pandas as pd
@@ -8,9 +10,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 import os
 import datetime
 import json
+import logging
 
 # Set the current date
 current_date = datetime.datetime(2025, 6, 17)
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Create FastAPI app
 app = FastAPI(title="Cybersecurity KPI Suggestion API",
@@ -56,63 +63,64 @@ def convert_numpy_types(obj):
         return obj
 
 
-# Load the sentence transformer model
+# Load the fine-tuned model for both suggestions and chatbot
+model_path = os.path.join(current_dir, 'models/fine_tuned_cybersec_model')
 try:
-    model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
-    print("Loaded sentence transformer model for suggestions")
+    model = SentenceTransformer(model_path)
+    print(f"Loaded fine-tuned model from: {model_path}")
 except Exception as e:
-    print(f"Error loading model: {e}")
+    print(f"Error loading fine-tuned model: {e}")
     model = None
 
 # Define suggestion templates with priority tags
 suggestion_templates = [
     {
-        "template": "🚨 Focus on addressing the {critical_high_count} high and critical vulnerabilities immediately.",
+        "template": "[URGENT] Focus on addressing the {critical_high_count} high and critical vulnerabilities immediately.",
         "priority": "urgent",
         "condition": lambda metrics: metrics['critical_high_count'] > 3
     },
     {
-        "template": "🚨 You have {old_vulns_count} vulnerabilities open for more than 30 days. Prioritize these for immediate remediation.",
+        "template": "[URGENT] You have {old_vulns_count} vulnerabilities open for more than 30 days. Prioritize these for immediate remediation.",
         "priority": "urgent",
         "condition": lambda metrics: metrics['old_vulns_count'] > 5
     },
     {
-        "template": "⚠️ Your average time to close vulnerabilities is {avg_days_to_close:.1f} days. The department average is {dept_avg:.1f} days.",
+        "template": "[WARNING] Your average time to close vulnerabilities is {avg_days_to_close:.1f} days. The department average is {dept_avg:.1f} days.",
         "priority": "medium",
         "condition": lambda metrics: metrics['avg_days_to_close'] > metrics['dept_avg']
     },
     {
-        "template": "🚨 There are {high_risk_count} high-risk items (CVSS or Risk Score > 7) that require urgent attention.",
+        "template": "[URGENT] There are {high_risk_count} high-risk items (CVSS or Risk Score > 7) that require urgent attention.",
         "priority": "urgent",
         "condition": lambda metrics: metrics['high_risk_count'] > 2
     },
     {
-        "template": "⚠️ Consider reviewing your patch management process to improve remediation time, especially for Application {worst_app}.",
+        "template": "[WARNING] Consider reviewing your patch management process to improve remediation time, especially for Application {worst_app}.",
         "priority": "medium",
         "condition": lambda metrics: True  # Always consider this
     },
     {
-        "template": "⚠️ Implementing automated scanning could help identify vulnerabilities earlier and reduce your average detection time.",
+        "template": "[WARNING] Implementing automated scanning could help identify vulnerabilities earlier and reduce your average detection time.",
         "priority": "medium",
         "condition": lambda metrics: metrics['avg_days_to_close'] > 25
     },
     {
-        "template": "⚠️ Regular security training for your team could reduce the vulnerability introduction rate, especially for repeating issues ({repeat_count}).",
+        "template": "[WARNING] Regular security training for your team could reduce the vulnerability introduction rate, especially for repeating issues ({repeat_count}).",
         "priority": "medium",
         "condition": lambda metrics: metrics['repeat_count'] > 1
     },
     {
-        "template": "⚠️ Establish a vulnerability prioritization framework to help focus on Critical issues in {dept_name} department.",
+        "template": "[WARNING] Establish a vulnerability prioritization framework to help focus on Critical issues in {dept_name} department.",
         "priority": "medium",
         "condition": lambda metrics: metrics['critical_high_count'] > 0
     },
     {
-        "template": "✅ Your vulnerability management for Application {best_app} is performing well. Consider applying similar practices to other applications.",
+        "template": "[GOOD] Your vulnerability management for Application {best_app} is performing well. Consider applying similar practices to other applications.",
         "priority": "good",
         "condition": lambda metrics: 'best_app' in metrics
     },
     {
-        "template": "✅ Your team has successfully reduced the average closure time for Medium severity issues. Continue this good practice.",
+        "template": "[GOOD] Your team has successfully reduced the average closure time for Medium severity issues. Continue this good practice.",
         "priority": "good",
         "condition": lambda metrics: metrics['avg_days_to_close'] < 20
     }
@@ -130,6 +138,12 @@ class SuggestionResponse(BaseModel):
     ao_name: str
     suggestions: List[Dict[str, Any]]
     metrics: Dict[str, Any]
+
+
+# Define a request model for the chatbot endpoint
+class ChatbotRequest(BaseModel):
+    ao_id: Optional[str] = None
+    question: str
 
 # Function to generate suggestions based on AO metrics
 
@@ -198,6 +212,23 @@ def generate_suggestions_for_ao(ao_id):
     if best_app:
         metrics['best_app'] = best_app
 
+    # Ensure all placeholders in templates have corresponding keys in metrics
+    for template in suggestion_templates:
+        try:
+            formatted_template = template["template"].format(
+                critical_high_count=metrics.get("critical_high_count", 0),
+                old_vulns_count=metrics.get("old_vulns_count", 0),
+                avg_days_to_close=metrics.get("avg_days_to_close", 0),
+                dept_avg=metrics.get("dept_avg", 0),
+                high_risk_count=metrics.get("high_risk_count", 0),
+                worst_app=metrics.get("worst_app", "Unknown"),
+                repeat_count=metrics.get("repeat_count", 0),
+                dept_name=metrics.get("dept_name", "Unknown")
+            )
+        except KeyError as e:
+            print(f"Missing key in metrics for template: {e}")
+            continue  # Skip this template if a key is missing
+
     # Create context from the AO's data for embedding
     ao_context = f"""
     Application Owner: {ao_id} ({ao_name})
@@ -250,6 +281,17 @@ def generate_suggestions_for_ao(ao_id):
 
     return result
 
+
+# Define a knowledge base of common questions and answers
+knowledge_base = [
+    {"question": "How can I improve my risk score?",
+        "answer": "Focus on addressing high-risk vulnerabilities with CVSS > 7."},
+    {"question": "What is my average closure time?",
+        "answer": "Your average closure time is above the department average. Consider prioritizing critical issues."},
+    {"question": "How can I reduce vulnerabilities?",
+        "answer": "Implement automated scanning and regular security training for your team."},
+]
+
 # API endpoints
 
 
@@ -258,18 +300,24 @@ async def root():
     return {"message": "Cybersecurity KPI Suggestion API is running"}
 
 
+# Ensure proper UTF-8 encoding in the response
 @app.get("/suggestions/{ao_id}", response_model=SuggestionResponse)
 async def get_suggestions(ao_id: str):
-    if ao_id not in df['Application_Owner_ID'].unique():
-        raise HTTPException(
-            status_code=404, detail=f"Application Owner {ao_id} not found")
+    """Simplified suggestions endpoint with logging to capture errors."""
+    try:
+        logging.info(f"Received request for suggestions with ao_id: {ao_id}")
+        suggestions = generate_suggestions_for_ao(ao_id)
 
-    suggestions = generate_suggestions_for_ao(ao_id)
+        if "error" in suggestions:
+            logging.error(
+                f"Error generating suggestions: {suggestions['error']}")
+            raise HTTPException(status_code=500, detail=suggestions["error"])
 
-    if "error" in suggestions:
-        raise HTTPException(status_code=500, detail=suggestions["error"])
-
-    return suggestions
+        logging.debug(f"Generated suggestions: {suggestions}")
+        return suggestions
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
 
 
 @app.get("/aos")
@@ -299,6 +347,50 @@ async def get_applications(ao_id: Optional[str] = None):
     # Convert any numpy types
     apps = convert_numpy_types(apps)
     return {"applications": apps}
+
+
+@app.post("/chatbot")
+async def chatbot_query(request: ChatbotRequest):
+    """Handle chatbot queries related to AO performance."""
+    if model is None:
+        logging.error("Chatbot model is unavailable.")
+        return JSONResponse(content={"error": "Chatbot system temporarily unavailable."}, status_code=503)
+
+    try:
+        logging.info(f"Received chatbot query: {request.question}")
+        question_embedding = model.encode([request.question])[0]
+        logging.debug(f"Generated question embedding: {question_embedding}")
+
+        best_match = None
+        best_score = -1
+        for item in knowledge_base:
+            answer_embedding = model.encode([item["question"]])[0]
+            score = cosine_similarity([question_embedding], [
+                                      answer_embedding])[0][0]
+            logging.debug(
+                f"Comparing with: {item['question']}, Score: {score}")
+            if score > best_score:
+                best_score = score
+                best_match = item
+
+        if best_match:
+            logging.info(
+                f"Best match found: {best_match['question']} with score {best_score}")
+            return {"answer": best_match["answer"], "relevance_score": float(best_score)}
+        else:
+            logging.warning("No relevant answer found.")
+            return {"answer": "I'm sorry, I couldn't find a relevant answer.", "relevance_score": 0.0}
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
+
+# Serve static files, including favicon.ico
+app.mount("/static", StaticFiles(directory=current_dir), name="static")
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    return RedirectResponse(url="/static/favicon.ico")
 
 # Run the FastAPI app
 if __name__ == "__main__":

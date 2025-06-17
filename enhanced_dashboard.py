@@ -110,13 +110,13 @@ navbar = dbc.Navbar(
             ],
                 align="center",
             ),
-            href="#",
+            href="/",
             style={"textDecoration": "none"},
         ),
         dbc.NavbarToggler(id="navbar-toggler"),
         dbc.Collapse(
             dbc.Nav([
-                dbc.NavItem(dbc.NavLink("Dashboard", href="#")),
+                dbc.NavItem(dbc.NavLink("Dashboard", href="/")),
                 dbc.NavItem(dbc.NavLink(
                     "AO Performance", href="#ao-performance")),
                 dbc.NavItem(dbc.NavLink(
@@ -125,6 +125,8 @@ navbar = dbc.Navbar(
                     "Urgent Issues", href="#urgent-issues")),
                 dbc.NavItem(dbc.NavLink(
                     f"Date: {current_date.strftime('%B %d, %Y')}")),
+                dbc.NavItem(dbc.NavLink(
+                    "Chatbot", href="/chatbot")),  # Add Chatbot link
             ],
                 className="ms-auto",
                 navbar=True),
@@ -207,6 +209,26 @@ export_panel = dbc.Card([
         ])
     ])
 ], className="mb-4 shadow")
+
+# Chatbot Page
+chatbot_layout = html.Div([
+    html.H3("Chatbot Assistance", style={"textAlign": "center"}),
+    dcc.Textarea(
+        id="chatbot-input",
+        placeholder="Ask a question about your performance...",
+        style={"width": "100%", "height": "100px"},
+    ),
+    html.Button("Submit", id="chatbot-submit",
+                n_clicks=0, className="btn btn-primary"),
+    html.Div(id="chatbot-response", style={"marginTop": "20px"}),
+    html.Div([
+        html.P("Was this response helpful?"),
+        dbc.Button("Yes", id="feedback-yes",
+                   color="success", className="me-2"),
+        dbc.Button("No", id="feedback-no", color="danger"),
+        html.Div(id="feedback-message", style={"marginTop": "10px"})
+    ], style={"marginTop": "20px"})
+])
 
 # Define the app layout
 app.layout = html.Div([
@@ -395,7 +417,27 @@ app.layout = html.Div([
                             ])
                         ], className="mb-4 shadow")
                     ], width=12)
-                ])
+                ]),
+
+                # Chatbot page (initially hidden)
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardHeader("Chatbot Assistance"),
+                            dbc.CardBody([
+                                html.Div(id="chatbot-response",
+                                         style={"marginTop": "20px"}),
+                                dcc.Textarea(
+                                    id="chatbot-input",
+                                    placeholder="Ask a question about your performance...",
+                                    style={"width": "100%", "height": "100px"},
+                                ),
+                                html.Button(
+                                    "Submit", id="chatbot-submit", n_clicks=0, className="btn btn-primary mt-2"),
+                            ])
+                        ], className="mb-4 shadow")
+                    ], width=12)
+                ], id="chatbot-row", style={"display": "none"})
             ], width=9)
         ])
     ], fluid=True),
@@ -413,8 +455,26 @@ app.layout = html.Div([
                        className="text-muted text-end")
             ], width=6)
         ])
-    ], fluid=True)
+    ], fluid=True),
+    dcc.Loading(
+        id="loading-refresh-unique",  # Renamed to ensure uniqueness
+        type="circle",
+        children=[
+            html.Div(id="loading-output-refresh-unique")
+        ]
+    )
 ])
+
+# Add a loading spinner for the Refresh Suggestions button
+app.layout.children.append(
+    dcc.Loading(
+        id="loading-refresh",
+        type="circle",
+        children=[
+            html.Div(id="loading-output-refresh")
+        ]
+    )
+)
 
 # Callback to update department dropdown based on AO selection
 
@@ -1003,13 +1063,14 @@ def update_dashboard(n_clicks, ao_ids, dept_names, status_values):
 
 
 @app.callback(
-    Output("suggestion-content", "children"),
+    [Output("suggestion-content", "children"),
+     Output("loading-output-refresh", "children")],
     [Input("refresh-suggestions", "n_clicks"),
      Input("ao-dropdown", "value")]
 )
 def update_suggestions(n_clicks, ao_ids):
     if not ao_ids or len(ao_ids) == 0:
-        return html.P("Select an Application Owner to see suggestions")
+        return html.P("Select an Application Owner to see suggestions"), ""
 
     suggestions_content = []
 
@@ -1025,110 +1086,19 @@ def update_suggestions(n_clicks, ao_ids):
                 # Successfully got suggestions from API
                 data = response.json()
                 ao_name = data['ao_name']
-
-                # Create styled suggestion items
-                suggestion_items = []
-                for suggestion in data['suggestions']:
-                    text = suggestion['text']
-                    priority = suggestion['priority']
-
-                    # Style based on priority
-                    if priority == 'urgent':
-                        suggestion_items.append(
-                            html.Div([
-                                html.P(text, className="mb-2")
-                            ], className="alert alert-danger")
-                        )
-                    elif priority == 'medium':
-                        suggestion_items.append(
-                            html.Div([
-                                html.P(text, className="mb-2")
-                            ], className="alert alert-warning")
-                        )
-                    else:  # good
-                        suggestion_items.append(
-                            html.Div([
-                                html.P(text, className="mb-2")
-                            ], className="alert alert-success")
-                        )
-
-                suggestions_content.append(
-                    html.Div([
-                        html.H5(
-                            f"Suggestions for {ao_name} ({ao_id})", className="mb-3"),
-                        html.Div(suggestion_items)
-                    ], className="mb-4")
-                )
+                suggestions = data['suggestions']                # Format suggestions
+                suggestions_content.append(html.Div([
+                    html.H5(f"Suggestions for {ao_name}"),
+                    html.Ul([html.Li(suggestion['text'])
+                            for suggestion in suggestions])
+                ]))
             else:
-                # API request failed
                 suggestions_content.append(
-                    html.Div([
-                        html.H5(f"Suggestions for {ao_id}", className="mb-3"),
-                        html.Div([
-                            html.P(f"Could not retrieve suggestions from API. Status code: {response.status_code}",
-                                   className="text-danger"),
-                            html.P(
-                                "The suggestion service may not be running correctly."),
-                            html.Div([
-                                html.P("Start the suggestion API with either:"),
-                                dbc.Card(
-                                    dbc.CardBody([
-                                        html.Code(
-                                            "python suggestion_api.py  # For ML-based suggestions"),
-                                        html.Br(),
-                                        html.Code(
-                                            "python simple_suggestion_api.py  # For rule-based suggestions")
-                                    ]),
-                                    className="bg-light mb-2"
-                                )
-                            ])
-                        ], className="alert alert-warning")
-                    ], className="mb-4")
-                )
+                    html.P(f"Error fetching suggestions for AO {ao_id}: {response.status_code}"))
         except Exception as e:
-            # Handle connection errors to API
-            ao_name = df[df['Application_Owner_ID'] ==
-                         ao_id]['Application_Owner_Name'].iloc[0] if ao_id in df['Application_Owner_ID'].values else ao_id
+            suggestions_content.append(html.P(f"Error: {str(e)}"))
 
-            # Check if it's a connection error
-            error_msg = str(e)
-            if "Connection" in error_msg or "connect" in error_msg or "ConnectTimeoutError" in error_msg or "ConnectionError" in error_msg:
-                error_details = "The suggestion API service is not running."
-                cmd_hint = "Start the suggestion API with either:"
-                commands = [
-                    "python suggestion_api.py  # For ML-based suggestions",
-                    "python simple_suggestion_api.py  # For rule-based suggestions"
-                ]
-            else:
-                error_details = f"Error: {error_msg}"
-                cmd_hint = "Check the API logs for more details."
-                commands = []
-
-            suggestions_content.append(
-                html.Div([
-                    html.H5(
-                        f"Suggestions for {ao_name} ({ao_id})", className="mb-3"),
-                    html.Div([
-                        html.P(error_details, className="text-danger"),
-                        html.P(cmd_hint),
-                        dbc.Card(
-                            dbc.CardBody([
-                                html.Code(cmd) for cmd in commands
-                            ]),
-                            className="bg-light mb-2"
-                        ),
-                        html.P([
-                            "⚠️ ",
-                            html.Strong("Important: "),
-                            "You must start the suggestion API in a separate terminal window before refreshing suggestions."
-                        ], className="mt-2")
-                    ], className="alert alert-warning")
-                ], className="mb-4")
-            )
-
-    return html.Div(suggestions_content)
-
-    return html.Div(suggestions_content)
+    return suggestions_content, ""
 
 # Callback for CSV export
 
@@ -1227,6 +1197,49 @@ app.index_string = '''
     </body>
 </html>
 '''
+
+# Add routing for chatbot page
+
+
+@app.callback(
+    Output('chatbot-row', 'style'),
+    [Input('url', 'pathname')]
+)
+def display_chatbot_page(pathname):
+    if pathname == '/chatbot':
+        return {'display': 'block'}
+    return {'display': 'none'}
+
+
+# Callback for handling chatbot queries
+@app.callback(
+    Output("chatbot-response", "children"),
+    [Input("chatbot-submit", "n_clicks")],
+    [State("chatbot-input", "value")]
+)
+def handle_chatbot_query(n_clicks, question):
+    if n_clicks is None or not question:
+        raise PreventUpdate
+
+    try:
+        # Send the question to the chatbot API
+        api_url = "http://127.0.0.1:8000/chatbot"
+        payload = {"ao_id": "test_ao_id", "question": question}
+        response = requests.post(api_url, json=payload, timeout=5)
+
+        if response.status_code == 200:
+            # Parse the response and display the answer
+            data = response.json()
+            return html.Div([
+                html.P(f"Answer: {data['answer']}",
+                       style={"fontWeight": "bold"}),
+                html.P(f"Relevance Score: {data['relevance_score']:.2f}")
+            ])
+        else:
+            return html.P(f"Error: Received status code {response.status_code}")
+    except Exception as e:
+        return html.P(f"Error: {str(e)}")
+
 
 # Run the server
 if __name__ == '__main__':
