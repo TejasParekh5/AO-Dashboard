@@ -57,17 +57,20 @@
 ## 🚀 Quick Start Guide
 
 ### Option 1: One-Click Launch (Recommended)
+
 1. **Double-click** `START_OPTIMIZED_DASHBOARD.bat`
 2. **Wait** for automatic setup and launch
 3. **Open** http://localhost:8050 in your browser
 
 ### Option 2: Manual Launch
+
 1. **Install dependencies**: `pip install -r requirements.txt`
 2. **Start API**: `python api_optimized.py`
 3. **Start dashboard**: `python dashboard_optimized.py`
 4. **Access** at http://localhost:8050
 
 ### Option 3: PowerShell (Advanced)
+
 ```powershell
 # Run with enhanced features
 .\scripts\start_optimized_dashboard.ps1
@@ -78,6 +81,7 @@
 ## 🎛️ Dashboard Features
 
 ### 📊 Main Dashboard
+
 - **KPI Cards**: Total vulnerabilities, critical issues, risk scores
 - **Interactive Charts**: Severity distribution, status breakdown, risk analysis
 - **Urgent Issues Table**: Critical attention required items
@@ -85,12 +89,14 @@
 - **Real-time Updates**: Auto-refresh capabilities
 
 ### 🧠 AI Assistant
+
 - **Smart Suggestions**: ML-powered recommendations based on data
 - **Contextual Insights**: Personalized advice for Application Owners
 - **Interactive Chatbot**: Natural language security assistant
 - **Risk Assessment**: Automated vulnerability prioritization
 
 ### 📈 Analytics & Reporting
+
 - **Trend Analysis**: Historical data trends and patterns
 - **Risk Scoring**: Advanced CVSS and custom risk calculations
 - **Export Options**: CSV and PDF report generation
@@ -101,6 +107,7 @@
 ## 🔧 Technical Architecture
 
 ### Frontend Stack
+
 - **Framework**: Dash (Plotly) + Bootstrap
 - **Styling**: Custom CSS with CSS Variables
 - **JavaScript**: Vanilla JS with modern ES6+ features
@@ -108,12 +115,14 @@
 - **Icons**: Font Awesome 6
 
 ### Backend Stack
+
 - **API Framework**: FastAPI
 - **Data Processing**: Pandas + NumPy
 - **AI/ML**: Sentence Transformers, scikit-learn
 - **Data Storage**: Excel (with future database support)
 
 ### Key Technologies
+
 - **Python 3.8+**: Core application language
 - **Dash 2.x**: Web application framework
 - **FastAPI**: High-performance API framework
@@ -126,6 +135,7 @@
 ## 🎨 UI/UX Enhancements
 
 ### Design System
+
 - **Color Palette**: Professional cybersecurity theme
 - **Typography**: Inter font family for modern look
 - **Spacing**: Consistent 8px grid system
@@ -133,6 +143,7 @@
 - **Border Radius**: Consistent 8px/12px/16px values
 
 ### Interactive Features
+
 - **Hover Effects**: Smooth transitions and animations
 - **Loading States**: Visual feedback for user actions
 - **Keyboard Shortcuts**: Power user functionality
@@ -140,6 +151,7 @@
 - **Theme Toggle**: Light/dark mode support
 
 ### Responsive Design
+
 - **Mobile-First**: Optimized for all screen sizes
 - **Flexible Grid**: Bootstrap 5 responsive system
 - **Touch-Friendly**: Large tap targets and gestures
@@ -150,6 +162,7 @@
 ## 🔑 Key Improvements Made
 
 ### Performance Optimizations
+
 1. **Caching**: Implemented intelligent data caching
 2. **Lazy Loading**: Components load on demand
 3. **Debounced Actions**: Reduced API calls
@@ -157,6 +170,7 @@
 5. **Asset Optimization**: Minified CSS/JS
 
 ### UI/UX Enhancements
+
 1. **Modern Design**: Professional, clean interface
 2. **Better Navigation**: Intuitive menu structure
 3. **Enhanced Charts**: Interactive, responsive visualizations
@@ -164,6 +178,7 @@
 5. **Loading States**: Clear feedback for all actions
 
 ### Functionality Improvements
+
 1. **AI Integration**: Better suggestion algorithms
 2. **Error Handling**: Robust error management
 3. **Export Features**: Professional report generation
@@ -171,6 +186,7 @@
 5. **Keyboard Shortcuts**: Power user features
 
 ### Code Quality
+
 1. **Modular Structure**: Separated concerns
 2. **Error Handling**: Comprehensive exception management
 3. **Documentation**: Inline comments and docstrings
@@ -182,12 +198,14 @@
 ## 🔒 Security Features
 
 ### Data Protection
+
 - **Input Validation**: All user inputs sanitized
 - **Error Masking**: Sensitive information hidden
 - **Session Management**: Secure user sessions
 - **API Security**: Rate limiting and validation
 
 ### Vulnerability Management
+
 - **Risk Scoring**: Advanced CVSS integration
 - **Priority Matrix**: Intelligent issue prioritization
 - **Compliance Tracking**: Regulatory requirement monitoring
@@ -198,12 +216,14 @@
 ## 📊 Performance Metrics
 
 ### Load Times
+
 - **Dashboard Load**: < 3 seconds
 - **Chart Rendering**: < 1 second
 - **API Response**: < 500ms average
 - **Data Export**: < 5 seconds
 
 ### Scalability
+
 - **Concurrent Users**: 50+ supported
 - **Data Volume**: 10,000+ vulnerabilities
 - **Update Frequency**: Real-time capable
@@ -214,12 +234,14 @@
 ## 🛠️ Maintenance & Updates
 
 ### Regular Tasks
+
 1. **Data Refresh**: Update Excel source file
 2. **Model Retraining**: Quarterly AI model updates
 3. **Dependency Updates**: Monthly package updates
 4. **Performance Monitoring**: Weekly metrics review
 
 ### Monitoring
+
 - **Error Tracking**: Automatic error logging
 - **Performance Metrics**: Real-time monitoring
 - **User Analytics**: Usage pattern analysis
@@ -230,18 +252,21 @@
 ## 🆘 Troubleshooting
 
 ### Common Issues
+
 1. **Port Conflicts**: Use `START_OPTIMIZED_DASHBOARD.bat`
 2. **Missing Dependencies**: Run `pip install -r requirements.txt`
 3. **Excel File Issues**: Verify file path and permissions
 4. **API Connection**: Ensure ports 8000/8050 are available
 
 ### Debug Mode
+
 ```python
 # Enable debug mode
 app.run_server(debug=True, dev_tools_hot_reload=True)
 ```
 
 ### Log Files
+
 - Dashboard logs: Console output
 - API logs: FastAPI automatic logging
 - Error logs: Browser developer console
@@ -251,6 +276,7 @@ app.run_server(debug=True, dev_tools_hot_reload=True)
 ## 🚀 Future Enhancements
 
 ### Planned Features
+
 1. **Database Integration**: PostgreSQL/MongoDB support
 2. **Multi-tenant Support**: Organization isolation
 3. **Advanced Analytics**: Machine learning insights
@@ -258,6 +284,7 @@ app.run_server(debug=True, dev_tools_hot_reload=True)
 5. **WebSocket Support**: Real-time collaboration
 
 ### Technical Improvements
+
 1. **Containerization**: Docker deployment
 2. **Cloud Deployment**: AWS/Azure support
 3. **CDN Integration**: Global content delivery
@@ -269,12 +296,14 @@ app.run_server(debug=True, dev_tools_hot_reload=True)
 ## 📞 Support & Contact
 
 ### Getting Help
+
 1. **Documentation**: Check this file and inline docs
 2. **Troubleshooting**: See `docs/TROUBLESHOOTING_GUIDE.md`
 3. **Test Results**: Review `docs/TEST_RESULTS.md`
 4. **Error Logs**: Check console output
 
 ### Contributing
+
 1. **Code Standards**: Follow PEP 8 guidelines
 2. **Documentation**: Update docs for changes
 3. **Testing**: Add tests for new features
@@ -285,9 +314,11 @@ app.run_server(debug=True, dev_tools_hot_reload=True)
 ## 📄 License & Credits
 
 ### License
+
 This project is proprietary software developed for cybersecurity analysis.
 
 ### Credits
+
 - **Framework**: Dash by Plotly
 - **UI Components**: Bootstrap 5
 - **Icons**: Font Awesome
@@ -299,6 +330,7 @@ This project is proprietary software developed for cybersecurity analysis.
 ## 📈 Version History
 
 ### v2.0 (Current) - Enhanced UI & Performance
+
 - ✅ Complete UI redesign
 - ✅ Performance optimizations
 - ✅ Advanced animations
@@ -306,12 +338,14 @@ This project is proprietary software developed for cybersecurity analysis.
 - ✅ Enhanced documentation
 
 ### v1.5 - AI Integration
+
 - ✅ Chatbot functionality
 - ✅ Smart suggestions
 - ✅ ML model integration
 - ✅ API optimization
 
 ### v1.0 - Initial Release
+
 - ✅ Basic dashboard
 - ✅ Data visualization
 - ✅ Export functionality
@@ -319,5 +353,5 @@ This project is proprietary software developed for cybersecurity analysis.
 
 ---
 
-*Last updated: June 17, 2025*
-*Version: 2.0 Enhanced*
+_Last updated: June 17, 2025_
+_Version: 2.0 Enhanced_

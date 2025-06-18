@@ -35,12 +35,14 @@
    pip install -r requirements.txt
    ```
 
-2. **Run (Windows):**
+2. **Run (Single Command):**
    ```cmd
-   .\START_SIMPLE.bat
+   .\START_SIMPLIFIED.bat
    ```
 
 3. **Access:** Open browser to `http://localhost:8050`
+
+**✅ No API server required - everything runs in one process!**
 
 ---
 
@@ -56,27 +58,30 @@
 ### 🛠️ Installation
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/TejasParekh5/AO-Dashboard.git
    cd AO-Dashboard
    ```
 
 2. **Create Virtual Environment** (Recommended)
+
    ```bash
    # Windows Command Prompt
    python -m venv venv
    venv\\Scripts\\activate
-   
+
    # Windows PowerShell
    python -m venv venv
    venv\\Scripts\\Activate.ps1
-   
+
    # Linux/Mac
    python3 -m venv venv
    source venv/bin/activate
    ```
 
 3. **Install Dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -92,11 +97,13 @@
 ### Method 1: Automated Scripts (Recommended)
 
 **Windows Command Prompt:**
+
 ```cmd
 START_SIMPLE.bat
 ```
 
 **Windows PowerShell:**
+
 ```powershell
 # Simple and reliable method
 .\\START_SIMPLE.bat
@@ -109,6 +116,7 @@ START_SIMPLE.bat
 ```
 
 **Linux/Mac:**
+
 ```bash
 ./scripts/start_dashboard.sh
 ```
@@ -116,15 +124,19 @@ START_SIMPLE.bat
 ### Method 2: Manual Start
 
 1. **Start the API Server** (Terminal 1)
+
    ```bash
    python api_optimized.py
    ```
+
    - API will run on: `http://localhost:8001`
 
 2. **Start the Dashboard** (Terminal 2)
+
    ```bash
    python dashboard_optimized.py
    ```
+
    - Dashboard will run on: `http://localhost:8050`
 
 3. **Access the Dashboard**
@@ -135,14 +147,17 @@ START_SIMPLE.bat
 ### Training Your Own Model
 
 1. **Prepare Training Data**
+
    ```bash
    python inspect_dataset.py  # Analyze your data
    ```
 
 2. **Train the Model**
+
    ```bash
    python train_model.py
    ```
+
    - Model will be saved to: `models/fine_tuned_cybersec_model/`
    - Training typically takes 10-30 minutes depending on your hardware
 
@@ -154,6 +169,7 @@ START_SIMPLE.bat
 ### Using Pre-trained Models
 
 The dashboard comes with a pre-trained cybersecurity model optimized for:
+
 - **Vulnerability Analysis**
 - **Risk Assessment**
 - **Security Recommendations**
@@ -218,24 +234,28 @@ DATA_FILE=Cybersecurity_KPI_Minimal.xlsx
 ## 📊 Features Deep Dive
 
 ### 🎛️ Smart Filters
+
 - **Application Owner Selection**: Multi-select dropdown
 - **Department Filtering**: Dynamic department filtering
 - **Status Filtering**: Checkbox-based status selection
 - **Real-time Updates**: Instant chart and data updates
 
 ### 🤖 AI Insights Panel
+
 - **Intelligent Suggestions**: ML-powered recommendations
 - **Risk Analysis**: Automated risk assessment
 - **Best Practices**: Security guideline suggestions
 - **Performance Insights**: KPI improvement recommendations
 
 ### 💬 AI Security Assistant
+
 - **Interactive Chatbot**: Natural language security queries
 - **Context-Aware**: Understands your current dashboard context
 - **Knowledge Base**: Trained on cybersecurity best practices
 - **Real-time Responses**: Instant answers to security questions
 
 ### 📈 Analytics & Visualizations
+
 - **Vulnerability Distribution**: Pie charts and bar graphs
 - **Risk Score Analysis**: Trend analysis and histograms
 - **Status Breakdowns**: Current security posture overview
@@ -271,6 +291,7 @@ python analyze_excel.py
 ### Common Issues
 
 1. **Port Already in Use**
+
    ```bash
    # Kill existing processes
    taskkill /f /im python.exe  # Windows
@@ -279,24 +300,27 @@ python analyze_excel.py
    ```
 
 2. **PowerShell Script Execution Error**
+
    ```powershell
    # If you get "execution policy" error
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-   
+
    # If batch file not recognized, use .\ prefix
    .\\START_OPTIMIZED_DASHBOARD.bat
-   
+
    # Alternative: Run PowerShell script directly
    .\\scripts\\start_optimized_dashboard.ps1
    ```
 
 3. **Model Loading Errors**
+
    ```bash
    # Re-download models
    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('paraphrase-MiniLM-L3-v2')"
    ```
 
 4. **Data File Issues**
+
    ```bash
    # Verify data file integrity
    python inspect_dataset.py
@@ -385,6 +409,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔄 Version History
 
 ### v2.0.0 (Latest)
+
 - ✅ Complete UI/UX redesign with professional styling
 - ✅ AI-powered chatbot integration
 - ✅ Enhanced filtering and analytics
@@ -393,6 +418,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ Comprehensive error handling
 
 ### v1.0.0
+
 - 🎯 Initial release with basic dashboard functionality
 - 📊 Core visualizations and KPI monitoring
 - 🔍 Basic filtering capabilities
